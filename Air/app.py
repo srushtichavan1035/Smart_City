@@ -11,7 +11,7 @@ CORS(app, resources={r"*": {"origins": "*"}})
 model = joblib.load("aqi_test.pkl")
 
 # OpenWeather API Key (Replace with your actual key)
-API_KEY = "b424e7b087125687a996d796e4fe702d"
+API_KEY = "Replace with your actual key"
 
 def get_coordinates(city):
     """Convert city name to latitude and longitude using OpenWeather API"""
