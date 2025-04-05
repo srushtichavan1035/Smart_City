@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head >
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart City Analytics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f7;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #1a2a3a;
+        }
+
+        .logo-icon {
+            background-color: #0078d4;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f7;
+            border-radius: 20px;
+            padding: 8px 15px;
+            width: 300px;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            padding: 5px;
+            outline: none;
+        }
+
+        .search-icon {
+            color: #999;
+            margin-right: 5px;
+        }
+
+        .data-sources {
+            background-color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Main Layout */
+        .dashboard {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-right: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .sidebar h2 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #1a2a3a;
+        }
+
+        .metric-card {
+            background-color: #f9f9fb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid;
+        }
+
+        .metric-card.traffic {
+            border-color: #ff6b6b;
+            background-color: #fff1f1;
+        }
+
+        .metric-card.air {
+            border-color: #ffcc29;
+            background-color: #fffbef;
+        }
+
+        .metric-card.transport {
+            border-color: #00c896;
+            background-color: #f0fff9;
+        }
+
+        .metric-card.energy {
+            border-color: #4dabf7;
+            background-color: #f0f7ff;
+        }
+
+        .metric-title {
+            font-size: 0.9rem;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .metric-title i {
+            font-size: 1.1rem;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .trend {
+            font-size: 0.8rem;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        .trend.up {
+            color: #e74c3c;
+        }
+
+        .trend.down {
+            color: #27ae60;
+        }
+
+        .quick-actions {
+            margin-top: 30px;
+        }
+
+        .quick-actions h3 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: #6b7280;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .action-button {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-button:hover {
+            background-color: #f5f5f7;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+        }
+
+        .map-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .map-title {
+            font-size: 1.2rem;
+            color: #1a2a3a;
+        }
+
+        .map-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-indicator {
+            background-color: #10162f;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #27ae60;
+            border-radius: 50%;
+        }
+
+        .map-type-selector {
+            font-weight: 500;
+            color: #1a2a3a;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .city-map {
+            width: 100%;
+            height: 280px;
+            background-color: #d8d8d8;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .map-dot.good {
+            background-color: #27ae60;
+        }
+
+        .map-dot.moderate {
+            background-color: #f39c12;
+        }
+
+        .map-dot.critical {
+            background-color: #e74c3c;
+        }
+
+        .map-legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: white;
+            border-radius: 5px;
+            padding: 5px 10px;
+            display: flex;
+            gap: 15px;
+            font-size: 0.8rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .chart-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            color: #1a2a3a;
+            margin-bottom: 5px;
+        }
+
+        .chart-subtitle {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+
+        canvas {
+            max-width: 100%;
+        }
+
+        /* Air Quality Specific Styles */
+        .air-quality-index {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .aqi-gauge {
+            width: 200px;
+            height: 100px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .aqi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #f39c12;
+        }
+
+        .aqi-label {
+            font-size: 1rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .aqi-description {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #f39c12;
+            margin-top: 10px;
+        }
+
+        .pollutant-levels {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .pollutant-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .pollutant-name {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .pollutant-value {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            height: 6px;
+            width: 100%;
+            background-color: #f0f0f0;
+            border-radius: 3px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .progress-fill.low {
+            background-color: #27ae60;
+        }
+
+        .progress-fill.moderate {
+            background-color: #f39c12;
+        }
+
+        .progress-fill.high {
+            background-color: #e74c3c;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">
+                <i>📍</i>
+            </div>
+            <span>Smart City Analytics</span>
+        </div>
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search city data...">
+        </div>
+        <div class="data-sources">
+            <span>📊</span>
+            <span>Data Sources</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="sidebar">
+                <h2>City Metrics</h2>
+                <div class="metric-card traffic">
+                    <div class="metric-title">
+                        <span>Traffic Congestion</span>
+                        <i>🚗</i>
+                    </div>
+                    <div class="metric-value">
+                        <span>63%</span>
+                        <span class="trend up">↑ 2.3%</span>
+                    </div>
+                </div>
+
+                <div class="metric-card air">
+                    <div class="metric-title">
+                        <span>Air Quality Index</span>
+                        <i>☁️</i>
+                    </div>
+                    <div class="metric-value">
+                        <span>72</span>
+                        <span class="trend down">↓ 1.8%</span>
+                    </div>
+
+                </div>
+                
+                <div class="metric-card transport">
+                    <div class="metric-title">
+                        <span>Public Transport Usage</span>
+                        <i>🚊</i>
+                    </div>
+                    <div class="metric-value">
+                        <span>24K</span>
+                        <span class="trend up">↑ 2.3%</span>
+                    </div>
+                </div>
+                <div class="metric-card energy">
+                    <div class="metric-title">
+                        <span>Energy Consumption</span>
+                        <i>⚡</i>
+                    </div>
+                    <div class="metric-value">
+                        <span>86 MW</span>
+                        <span class="trend down">↓ 1.8%</span>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <div class="action-button">Export Data</div>
+                        <div class="action-button">Set Alerts</div>
+                        <div class="action-button">Share Rep...</div>
+                        <div class="action-button">Predictions</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="map-container">
+                    <div class="map-header">
+                      <h2 class="map-title">City Overview Map</h2>
+                      <div class="map-controls">
+                        <div class="live-indicator">
+                          <span class="live-dot"></span>
+                          <span>Live Data</span>
+                        </div>
+                        <div class="map-type-selector">
+                          <input id="cityInput" type="text" placeholder="Enter city name" style="padding: 6px; font-size: 14px;" />
+                          <button onclick="searchCity()" style="padding: 6px 10px; font-size: 14px; background: #3a86ff; color: white; border: none; border-radius: 4px;">Search</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="map" style="height: 500px; border-radius: 10px;"></div>
+                  </div>
+                  
+
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3 class="chart-title">City Traffic Info</h3>
+                        <div class="chart-subtitle">Real-time traffic conditions</div>
+                        <div class="chart-container">
+                            <input type="text" id="location-input" placeholder="Enter location (e.g., Pune)" style="padding: 10px; margin-top: 10px; font-size: 16px; width: 70%;">
+                            <button onclick="processLocation(document.getElementById('location-input').value)" style="padding: 10px; margin-top: 10px; font-size: 16px; background-color: #3a86ff; color: white; border: none; border-radius: 8px; cursor: pointer;">Get Traffic Info</button>
+                            <div id="traffic-info" style="margin-top: 20px; padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);"></div>
+                        </div>
+                    </div>
+
+                   <!-- Air Quality Component -->
+                <div class="air-quality-component">
+                    <h3 class="chart-title">Air Quality</h3>
+                    <div class="chart-subtitle">Current AQI and pollutant levels</div>
+
+                    <div class="search-bar">
+                        <input type="text" id="cityInputs" placeholder="Enter your city" />
+                        <button onclick="getAQI()">Search</button>
+                    </div>
+
+                    <div class="" id="aqiResult">
+                        <!-- Dynamic results injected here -->
+                    </div>
+                </div>
+
+                <style>
+                    .air-quality-component {
+                        padding: 20px;
+                        background: #f9f9f9;
+                        border-radius: 12px;
+                        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+                        max-width: 450px;
+                        font-family: 'Segoe UI', sans-serif;
+                    }
+                    .chart-title {
+                        font-size: 22px;
+                        font-weight: bold;
+                        margin-bottom: 4px;
+                    }
+                    .chart-subtitle {
+                        font-size: 14px;
+                        color: #555;
+                        margin-bottom: 16px;
+                    }
+                    .search-bar {
+                        display: flex;
+                        gap: 8px;
+                        margin-bottom: 16px;
+                    }
+                    .search-bar input {
+                        flex: 1;
+                        padding: 8px;
+                        font-size: 14px;
+                    }
+                    .search-bar button {
+                        padding: 8px 12px;
+                        background-color: #3a86ff;
+                        color: white;
+                        border: none;
+                        border-radius: 6px;
+                        cursor: pointer;
+                    }
+                    .aqi-value {
+                        font-size: 40px;
+                        font-weight: bold;
+                        color: #d9534f;
+                    }
+                    .aqi-label, .aqi-description {
+                        font-size: 14px;
+                        margin: 4px 0;
+                    }
+                    .pollutant-item {
+                        margin-top: 12px;
+                    }
+                    .progress-bar {
+                        height: 6px;
+                        background: #ddd;
+                        border-radius: 4px;
+                        overflow: hidden;
+                        margin: 4px 0 10px;
+                    }
+                    .progress-fill {
+                        height: 100%;
+                        background-color: #f0ad4e;
+                    }
+                </style>
+
+                
+                <script>
+                    function getAQI() {
+                        const city = document.getElementById("cityInputs").value.trim();
+                        console.log(city)
+
+                        if (!city) {
+                            document.getElementById("aqiResult").innerHTML = `<p>Please enter a city name.</p>`;
+                            return;
+                        }
+
+                        fetch(`http://127.0.0.1:5001/predict?city=${encodeURIComponent(city)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.error) {
+                                    document.getElementById("aqiResult").innerHTML = `<p>Error: ${data.error}</p>`;
+                                    return;
+                                }
+
+                                const pollutants = data.Pollution_Levels || {};
+                                const levelsHTML = Object.entries(pollutants).map(([key, value]) => {
+                                    const percentage = Math.min(parseFloat(value), 200) / 2;
+                                    return `
+                                        <div class="pollutant-item">
+                                            <div><strong>${key}</strong>: ${value}</div>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width: ${percentage}%;"></div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join("");
+
+                                document.getElementById("aqiResult").innerHTML = `
+                                    <div class="aqi-value">${data.AQI_Value || "—"}</div>
+                                    <div class="aqi-label">Air Quality Index</div>
+                                    <div class="aqi-description">${data.AQI_Bucket}</div>
+                                    ${levelsHTML}
+                                `;
+                            })
+                            .catch(error => {
+                                console.error("Error fetching AQI data:", error);
+                                document.getElementById("aqiResult").innerHTML = `<p>Error fetching AQI data.</p>`;
+                            });
+                    }
+                </script>
+                      
+                      <div class="chart-card">
+                        <h3 class="chart-title">Accidents</h3>
+                        <div class="chart-subtitle">Traffic incidents (crashes, roadworks, etc.)</div>
+                        <div class="chart-container">
+                            <canvas id="incidentChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Add this code right after the Traffic Analytics chart card -->
+
+
+<!-- New City Traffic Info Component -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+
+    <!-- Add this right before the closing </body> tag -->
+<script>
+    const openCageApiKey = '5fb1efef10354cc3a66ef5bde7aa0b00';
+    const tomTomApiKey = '6UwfT9EATFoyxBDfEM9mSkLgZtliQKBI';
+
+    async function getCoordinatesFromLocation(location) {
+        const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=${openCageApiKey}`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.results.length > 0) {
+                const { lat, lng } = data.results[0].geometry;
+                return { lat, lng };
+            } else {
+                throw new Error('No results found');
+            }
+        } catch (error) {
+            console.error('OpenCage Error:', error);
+            document.getElementById('traffic-info').innerHTML = `<p>Error getting location: ${error.message}</p>`;
+        }
+    }
+
+    async function getTomTomTrafficFlow(lat, lng) {
+        const url = `https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?point=${lat},${lng}&key=${tomTomApiKey}`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('TomTom Error:', error);
+            document.getElementById('traffic-info').innerHTML = `<p>Error getting traffic: ${error.message}</p>`;
+        }
+    }
+
+    async function processLocation(location) {
+        const coordinates = await getCoordinatesFromLocation(location);
+        if (coordinates) {
+            const trafficData = await getTomTomTrafficFlow(coordinates.lat, coordinates.lng);
+            displayTrafficInfo(trafficData);
+        }
+    }
+
+    function displayTrafficInfo(data) {
+        const output = document.getElementById('traffic-info');
+        if (data && data.flowSegmentData) {
+            const speed = data.flowSegmentData.currentSpeed;
+            const freeFlow = data.flowSegmentData.freeFlowSpeed;
+            const confidence = data.flowSegmentData.confidence;
+            const travelTime = data.flowSegmentData.currentTravelTime;
+            output.innerHTML = `
+                <h3>Traffic Data:</h3>
+                <p><strong>Current Speed:</strong> ${speed} km/h</p>
+                <p><strong>Free Flow Speed:</strong> ${freeFlow} km/h</p>
+                <p><strong>Travel Time:</strong> ${travelTime} sec</p>
+                <p><strong>Confidence:</strong> ${confidence * 100}%</p>
+            `;
+        } else {
+            output.innerHTML = `<p>No traffic data found.</p>`;
+        }
+    }
+</script>
+<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.18.0/maps/maps-web.min.js"></script>
+<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.18.0/services/services-web.min.js"></script>
+<script>
+  const apiKey = '9tcswAAWGFVHfk7asANY7M4Hs92VeKCc';
+  tt.setProductInfo('CityDashboard', '1.0');
+
+  const map = tt.map({
+    key: apiKey,
+    container: 'map',
+    center: [73.8567, 18.5204], // Default to Pune
+    zoom: 12
+  });
+
+  const trafficFlowTiles = tt.trafficFlowTiles({ key: apiKey });
+  map.addLayer({
+    id: 'traffic-flow',
+    type: 'raster',
+    source: trafficFlowTiles
+  });
+
+  function searchCity() {
+    const city = document.getElementById('cityInput').value;
+    if (!city) return;
+
+    tt.services.fuzzySearch({
+      key: apiKey,
+      query: city
+    }).then(response => {
+      const result = response.results[0];
+      const coordinates = result.position;
+      map.flyTo({ center: [coordinates.lon, coordinates.lat], zoom: 13 });
+      loadIncidents(coordinates.lat, coordinates.lon);
+    });
+  }
+
+  function loadIncidents(lat, lon) {
+    const bounds = {
+      north: lat + 0.1,
+      south: lat - 0.1,
+      east: lon + 0.1,
+      west: lon - 0.1
+    };
+
+    const bbox = `${bounds.north},${bounds.west},${bounds.south},${bounds.east}`;
+
+    fetch(`https://api.tomtom.com/traffic/services/5/incidentDetails?key=${apiKey}&boundingBox=${bbox}&fields=geometry,type,iconCategory,events`)
+      .then(res => res.json())
+      .then(data => {
+        if (!data || !data.incidents) return;
+
+        data.incidents.forEach(incident => {
+          const pos = incident.geometry?.coordinates?.[0];
+          if (pos) {
+            new tt.Marker({ color: 'red' })
+              .setLngLat([pos[0], pos[1]])
+              .setPopup(new tt.Popup().setText(incident?.events?.[0]?.description || 'Traffic Incident'))
+              .addTo(map);
+          }
+        });
+      })
+      .catch(err => console.error('Incident Load Error:', err));
+  }
+</script>
+
+</body>
+</html>
